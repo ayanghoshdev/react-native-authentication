@@ -14,3 +14,20 @@ export const postService = async (endpoint, request) => {
     throw error;
   }
 };
+
+export const getService = async (endpoint, header) => {
+  try {
+    const res = await axios({
+      url: `${base_url}${endpoint}`,
+      method: 'GET',
+      headers: header,
+    });
+    if (!res.data.success) {
+      return new Error(res.data.message);
+    }
+    return res.data;
+  } catch (error) {
+    console.log(error.response);
+    throw error;
+  }
+};

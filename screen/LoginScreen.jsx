@@ -9,14 +9,15 @@ import {
   View,
 } from 'react-native';
 import {postService} from '../services/api';
+import {useAuth} from '../contexts/authContext';
 
-export default function SignupScreen({navigation}) {
+export default function LoginScreen({navigation}) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
   });
+  const {setIsLoggedIn} = useAuth();
 
   const changeHandler = (key, value) => {
     setFormData(prev => ({...prev, [key]: value}));
@@ -24,15 +25,17 @@ export default function SignupScreen({navigation}) {
   const submitHandler = async () => {
     setLoading(true);
     try {
-      const res = await postService('/users/signup', formData);
+      const res = await postService('/users/login', formData);
       if (res.success) {
         ToastAndroid.show('signup success', ToastAndroid.LONG);
       } else {
         throw new Error(res.error);
       }
-      await AsyncStorage.setItem('token', JSON.stringify(res.token));
-      setLoading(false);
-      navigation.navigate('Home');
+      AsyncStorage.setItem('token', JSON.stringify(res.token)).then(() => {
+        setLoading(false);
+        setIsLoggedIn(true);
+        navigation.navigate('Home');
+      });
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.LONG);
       console.log(error);
@@ -41,14 +44,8 @@ export default function SignupScreen({navigation}) {
   };
   return (
     <View style={Styles.container}>
-      <Text style={Styles.heading}>sign up</Text>
+      <Text style={Styles.heading}>Log in</Text>
       <View style={Styles.inputgroup}>
-        <TextInput
-          onChangeText={text => changeHandler('name', text)}
-          value={formData.name}
-          style={Styles.input}
-          placeholder="Name"
-        />
         <TextInput
           onChangeText={text => changeHandler('email', text)}
           value={formData.email}
@@ -64,13 +61,13 @@ export default function SignupScreen({navigation}) {
         <Pressable
           disabled={loading}
           onPress={submitHandler}
-          title="sign up"
+          title="Login"
           style={Styles.button}>
-          <Text style={Styles.text}>{loading ? '...' : 'Sign up'}</Text>
+          <Text style={Styles.text}>{loading ? '...' : 'Login'}</Text>
         </Pressable>
         <View style={{flexDirection: 'row', gap: 10}}>
-          <Text>Already have an accoutn?</Text>
-          <Text onPress={() => navigation.navigate('Login')}>Login</Text>
+          <Text>Don't have an accoutn?</Text>
+          <Text onPress={() => navigation.navigate('Signup')}>Sign up</Text>
         </View>
       </View>
     </View>
