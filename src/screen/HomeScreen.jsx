@@ -37,11 +37,18 @@ function HomeScreen({navigation}) {
           <Text style={Styles.text}>See notifications</Text>
         </Pressable>
       ) : (
-        <Pressable
-          style={Styles.button}
-          onPress={() => navigation.navigate('Tests')}>
-          <Text style={Styles.text}>Create your test here</Text>
-        </Pressable>
+        <>
+          <Pressable
+            style={Styles.button}
+            onPress={() => navigation.navigate('CreateTest')}>
+            <Text style={Styles.text}>Create your test here</Text>
+          </Pressable>
+          <Pressable
+            style={Styles.button}
+            onPress={() => navigation.navigate('TestList')}>
+            <Text style={Styles.text}>My tests</Text>
+          </Pressable>
+        </>
       )}
     </View>
   );

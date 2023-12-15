@@ -1,5 +1,5 @@
 import App from './App';
-import {AuthProvider} from './contexts/authContext';
+import {AuthProvider} from './src/contexts/authContext';
 
 export default function Layout() {
   return (

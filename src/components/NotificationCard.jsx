@@ -1,15 +1,21 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {INFOICON} from '../images';
+import {useNavigation} from '@react-navigation/native';
 
 export default function NoficationsCard({notification}) {
+  const navigation = useNavigation();
   return (
     <View style={[Styles.card, Styles.dropShadow]}>
       <Text style={Styles.text}>
         {notification?.test?.name.slice(0, 25)}...
       </Text>
       {/* <Text>{notification?.test?.price}</Text> */}
-      <Pressable style={Styles.infoBtn}>
+      <Pressable
+        onPress={() =>
+          navigation.navigate('TestDetails', {testId: notification?.test?._id})
+        }
+        style={Styles.infoBtn}>
         <Text style={Styles.text}>info</Text>
         <Image style={Styles.icon} source={INFOICON} />
       </Pressable>

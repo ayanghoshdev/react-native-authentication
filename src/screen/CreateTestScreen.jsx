@@ -1,7 +1,7 @@
 import React, {ScrollView, StyleSheet, Text, View} from 'react-native';
 import CreateTestsForm from '../components/CreateTestsForm';
 
-export default function TestsScreen() {
+export default function CreateTestScreen() {
   return (
     <ScrollView>
       <View style={Styles.container}>

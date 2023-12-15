@@ -14,11 +14,7 @@ export default function NotificationsScreen() {
 
   const getAllNotifications = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await getService('/notifications/tests', {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      });
+      const res = await getService('/notifications/tests');
       setNotifications(res.notifications);
       setLoading(false);
     } catch (error) {
