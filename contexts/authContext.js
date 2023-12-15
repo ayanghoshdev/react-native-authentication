@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,11 +13,12 @@ export const AuthProvider = ({children}) => {
 
   const getData = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
+      const savedUser = JSON.parse(await AsyncStorage.getItem('user'));
+      if (!savedUser) {
         throw new Error('something went wrong');
       } else {
-        setIsLoggedIn(true);
+        setUser(savedUser);
+        // console.log(savedUser);
         setLoading(false);
       }
     } catch (error) {
@@ -26,7 +27,7 @@ export const AuthProvider = ({children}) => {
   };
 
   return (
-    <AuthContext.Provider value={{loading, isLoggedIn, setIsLoggedIn}}>
+    <AuthContext.Provider value={{loading, user, setUser}}>
       {children}
     </AuthContext.Provider>
   );

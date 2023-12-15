@@ -11,12 +11,16 @@ import NotificationsScreen from './screen/NotificationsScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const {loading, isLoggedIn} = useAuth();
-  if (loading) return null;
+  const {loading, user} = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Signup">
-        {!isLoggedIn ? (
+        {!user ? (
           <>
             <Stack.Screen name="Signup" component={SignupScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />

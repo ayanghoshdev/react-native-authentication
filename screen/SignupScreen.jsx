@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import {postService} from '../services/api';
+import {useAuth} from '../contexts/authContext';
 
 export default function SignupScreen({navigation}) {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,8 @@ export default function SignupScreen({navigation}) {
     email: '',
     password: '',
   });
+
+  const {setUser} = useAuth();
 
   const changeHandler = (key, value) => {
     setFormData(prev => ({...prev, [key]: value}));
@@ -30,7 +33,9 @@ export default function SignupScreen({navigation}) {
       } else {
         throw new Error(res.error);
       }
+      await AsyncStorage.setItem('user', JSON.stringify(res.user));
       await AsyncStorage.setItem('token', JSON.stringify(res.token));
+      setUser(res.user);
       setLoading(false);
       navigation.navigate('Home');
     } catch (error) {

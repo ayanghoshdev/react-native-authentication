@@ -1,7 +1,8 @@
-import {useEffect, useState} from 'react';
-import {Text, ToastAndroid, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {getService} from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NoficationsCard from '../components/NotificationCard';
 
 export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState(null);
@@ -27,10 +28,28 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <View>
-      <Text>All notifications</Text>
-      {!loading &&
-        notifications.map(item => <Text key={item._id}>{item.test.name}</Text>)}
+    <View style={Styles.container}>
+      <Text style={Styles.heading}>All notifications</Text>
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        notifications.map(item => (
+          <NoficationsCard key={item._id} notification={item} />
+        ))
+      )}
     </View>
   );
 }
+
+const Styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    gap: 10,
+  },
+  heading: {
+    fontSize: 20,
+    textAlign: 'center',
+  },
+});

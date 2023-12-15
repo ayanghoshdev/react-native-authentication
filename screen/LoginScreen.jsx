@@ -17,7 +17,7 @@ export default function LoginScreen({navigation}) {
     email: '',
     password: '',
   });
-  const {setIsLoggedIn} = useAuth();
+  const {setUser} = useAuth();
 
   const changeHandler = (key, value) => {
     setFormData(prev => ({...prev, [key]: value}));
@@ -27,15 +27,15 @@ export default function LoginScreen({navigation}) {
     try {
       const res = await postService('/users/login', formData);
       if (res.success) {
-        ToastAndroid.show('signup success', ToastAndroid.LONG);
+        ToastAndroid.show('Login success', ToastAndroid.LONG);
       } else {
         throw new Error(res.error);
       }
-      AsyncStorage.setItem('token', JSON.stringify(res.token)).then(() => {
-        setLoading(false);
-        setIsLoggedIn(true);
-        navigation.navigate('Home');
-      });
+      await AsyncStorage.setItem('user', JSON.stringify(res.user));
+      await AsyncStorage.setItem('token', JSON.stringify(res.token));
+      setUser(res.user);
+      setLoading(false);
+      navigation.navigate('Home');
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.LONG);
       console.log(error);
