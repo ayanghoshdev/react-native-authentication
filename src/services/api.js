@@ -37,7 +37,7 @@ export const getService = async endpoint => {
   }
 };
 
-export const pathService = async (endpoint, request) => {
+export const patchService = async (endpoint, request) => {
   try {
     const token = await AsyncStorage.getItem('token');
     const res = await axios({

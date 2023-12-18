@@ -9,7 +9,7 @@ export default function NoficationsCard({notification}) {
 
   const clickHandler = async () => {
     try {
-      await deleteService(`/notifications/tests/${notification._id}`);
+      deleteService(`/notifications/tests/${notification._id}`);
       navigation.navigate('TestDetails', {testId: notification?.test?._id});
     } catch (error) {
       console.log(error.message);

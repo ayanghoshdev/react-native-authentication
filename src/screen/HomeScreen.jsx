@@ -1,22 +1,31 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {useAuth} from '../contexts/authContext';
+import {useFocusEffect} from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getService} from '../services/api';
 
 function HomeScreen({navigation}) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const {user, setUser} = useAuth();
 
   const [notifications, setNotifications] = useState(null);
 
-  useEffect(() => {
-    if (user.role === 'admin') getAllNotifications();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.role === 'admin') {
+        getAllNotifications();
+      }
+      // No need for the cleanup function in this case
+    }, []),
+  );
 
   const getAllNotifications = async () => {
     try {
+      setLoading(true);
       const res = await getService('/notifications/tests');
       setNotifications(res.notifications);
       setLoading(false);
@@ -28,6 +37,7 @@ function HomeScreen({navigation}) {
   };
 
   const logout = async () => {
+    // console.log('logout clicked');
     try {
       setLoading(true);
       await AsyncStorage.removeItem('user');
@@ -39,6 +49,7 @@ function HomeScreen({navigation}) {
       ToastAndroid.show('Fail to logout', ToastAndroid.LONG);
     }
   };
+  // console.log(loading);
   return (
     <View style={Styles.container}>
       <Pressable disabled={loading} onPress={logout} style={Styles.logoutbtn}>
@@ -54,7 +65,8 @@ function HomeScreen({navigation}) {
           style={Styles.button}
           onPress={() => navigation.navigate('Notifications')}>
           <Text style={Styles.text}>See notifications</Text>
-          {!loading && (
+
+          {notifications?.length > 0 && (
             <Text
               style={{
                 position: 'absolute',

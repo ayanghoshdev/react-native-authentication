@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
@@ -9,25 +11,28 @@ import {
   ScrollView,
 } from 'react-native';
 import {useAuth} from '../contexts/authContext';
-import {getService, pathService} from '../services/api';
+import {getService, patchService} from '../services/api';
 import {Picker} from '@react-native-picker/picker';
 import CreateTestsForm from '../components/CreateTestsForm';
 
 export default function TestDetailsScreen({route}) {
   const [testDetails, setTestDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [isUpdateForm, setIsUpdateForm] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
 
   const {user} = useAuth();
   const {testId} = route.params;
 
   useEffect(() => {
     getTestDetails();
-  });
+
+    return () => setIsUpdated(false);
+  }, [isUpdated]);
 
   const getTestDetails = async () => {
     try {
-      const res = await getService(`/tests/${testId}`);
+      const res = await getService(`/tests/user/${testId}`);
       if (res.success) {
         setTestDetails(res.test);
         setLoading(false);
@@ -42,8 +47,11 @@ export default function TestDetailsScreen({route}) {
   // update status function
   const updateHandler = async selectedItem => {
     try {
-      const res = await pathService(`/tests/${testId}`, {status: selectedItem});
+      const res = await patchService(`/tests/admin/${testId}`, {
+        status: selectedItem,
+      });
       if (res.success) {
+        setIsUpdated(true);
         ToastAndroid.show('Status updated', ToastAndroid.LONG);
       } else {
         ToastAndroid.show('Something went wrong', ToastAndroid.LONG);
@@ -107,7 +115,7 @@ export default function TestDetailsScreen({route}) {
             {user.role === 'user' && (
               <Pressable
                 style={Styles.buttonStyle}
-                onPress={() => setIsUpdate(true)}>
+                onPress={() => setIsUpdateForm(true)}>
                 <Text
                   style={{
                     textAlign: 'center',
@@ -118,11 +126,12 @@ export default function TestDetailsScreen({route}) {
                 </Text>
               </Pressable>
             )}
-            {isUpdate && (
+            {isUpdateForm && (
               <CreateTestsForm
                 test={testDetails}
                 isUpdateForm={true}
-                onClose={setIsUpdate}
+                setIsUpdated={setIsUpdated}
+                onClose={setIsUpdateForm}
               />
             )}
           </View>

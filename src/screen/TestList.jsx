@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {getService} from '../services/api';
 import {useAuth} from '../contexts/authContext';
 import TestsCard from '../components/TestsCard';
@@ -17,7 +17,9 @@ export default function TestList() {
 
   const getAllTests = async () => {
     try {
-      const endpoint = `${user.role === 'admin' ? '/tests/admin' : '/tests'}`;
+      const endpoint = `${
+        user.role === 'admin' ? '/tests/admin' : '/tests/user'
+      }`;
       const res = await getService(endpoint);
       setTests(res.tests);
       setLoading(false);
@@ -36,16 +38,16 @@ export default function TestList() {
   }
 
   return (
-    <View style={Styles.container}>
+    <ScrollView style={Styles.container}>
       <Text style={Styles.heading}>
         {user.role === 'admin' ? 'All Tests' : 'Your tests'}
       </Text>
-      <View style={{gap: 10}}>
+      <View style={{gap: 10, paddingBottom: 40}}>
         {tests.map(test => (
           <TestsCard key={test?._id} test={test} />
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

@@ -7,7 +7,7 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {postService} from '../services/api';
+import {patchService, postService} from '../services/api';
 
 const initailvalue = {
   name: '',
@@ -15,7 +15,12 @@ const initailvalue = {
   price: '',
   location: '',
 };
-export default function CreateTestsForm({test, isUpdateForm = false, onClose}) {
+export default function CreateTestsForm({
+  test,
+  isUpdateForm = false,
+  onClose,
+  setIsUpdated,
+}) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(
     test
@@ -33,16 +38,28 @@ export default function CreateTestsForm({test, isUpdateForm = false, onClose}) {
   };
 
   const submitHandler = async () => {
+    const endpoint = isUpdateForm ? `/tests/user/${test._id}` : '/tests/user';
     try {
       setLoading(true);
-      const res = await postService('/tests', formData);
+
+      const res = await (isUpdateForm
+        ? patchService(endpoint, formData)
+        : postService(endpoint, formData));
       if (!res.success) {
         throw new Error(res.message);
       }
       setFormData(initailvalue);
-      ToastAndroid.show('Test created successfully', ToastAndroid.LONG);
+      ToastAndroid.show(
+        isUpdateForm
+          ? 'Test updated successfully'
+          : 'Test created successfully',
+        ToastAndroid.LONG,
+      );
       setLoading(false);
-      onClose();
+      if (isUpdateForm) {
+        setIsUpdated(true);
+        onClose();
+      }
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.LONG);
       setLoading(false);
