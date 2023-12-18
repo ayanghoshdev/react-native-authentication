@@ -15,14 +15,14 @@ const initailvalue = {
   price: '',
   location: '',
 };
-export default function CreateTestsForm({test}) {
+export default function CreateTestsForm({test, isUpdateForm = false, onClose}) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(
     test
       ? {
           name: test.name,
           description: test.description,
-          price: test.price,
+          price: test.price.toString(),
           location: test.location,
         }
       : initailvalue,
@@ -42,6 +42,7 @@ export default function CreateTestsForm({test}) {
       setFormData(initailvalue);
       ToastAndroid.show('Test created successfully', ToastAndroid.LONG);
       setLoading(false);
+      onClose();
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.LONG);
       setLoading(false);
@@ -80,7 +81,9 @@ export default function CreateTestsForm({test}) {
         style={Styles.button}
         disabled={loading}
         onPress={submitHandler}>
-        <Text style={Styles.text}>{loading ? '...' : 'Create'}</Text>
+        <Text style={Styles.text}>
+          {loading ? '...' : isUpdateForm ? 'Update' : 'Create'}
+        </Text>
       </Pressable>
     </View>
   );

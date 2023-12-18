@@ -118,7 +118,13 @@ export default function TestDetailsScreen({route}) {
                 </Text>
               </Pressable>
             )}
-            {isUpdate && <CreateTestsForm test={testDetails} />}
+            {isUpdate && (
+              <CreateTestsForm
+                test={testDetails}
+                isUpdateForm={true}
+                onClose={setIsUpdate}
+              />
+            )}
           </View>
         )}
       </ScrollView>
