@@ -1,12 +1,22 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, ToastAndroid, View, SafeAreaView} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+  SafeAreaView,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {useAuth} from '../contexts/authContext';
 import {getService, pathService} from '../services/api';
 import {Picker} from '@react-native-picker/picker';
+import CreateTestsForm from '../components/CreateTestsForm';
 
 export default function TestDetailsScreen({route}) {
   const [testDetails, setTestDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const {user} = useAuth();
   const {testId} = route.params;
@@ -53,41 +63,65 @@ export default function TestDetailsScreen({route}) {
 
   return (
     <SafeAreaView style={Styles.container}>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <View style={{gap: 10}}>
-          <View style={Styles.section}>
-            <Text style={Styles.sectionTitle}>Name: </Text>
-            <Text style={Styles.values}>{testDetails.name}</Text>
-          </View>
-          <View style={Styles.section}>
-            <Text style={Styles.sectionTitle}>Description: </Text>
-            <Text style={Styles.values}>{testDetails.description}</Text>
-          </View>
-          <View style={Styles.section}>
-            <Text style={Styles.sectionTitle}>Price: </Text>
-            <Text style={Styles.values}>₹{testDetails.price}</Text>
-          </View>
-          <View style={Styles.section}>
-            <Text style={Styles.sectionTitle}>Location: </Text>
-            <Text style={Styles.values}>{testDetails.location}</Text>
-          </View>
-          {user.role === 'admin' && (
+      <ScrollView>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <View style={{gap: 10}}>
+            <View style={Styles.section}>
+              <Text style={Styles.sectionTitle}>Name: </Text>
+              <Text style={Styles.values}>{testDetails.name}</Text>
+            </View>
+            <View style={Styles.section}>
+              <Text style={Styles.sectionTitle}>Description: </Text>
+              <Text style={Styles.values}>{testDetails.description}</Text>
+            </View>
+            <View style={Styles.section}>
+              <Text style={Styles.sectionTitle}>Price: </Text>
+              <Text style={Styles.values}>₹{testDetails.price}</Text>
+            </View>
+            <View style={Styles.section}>
+              <Text style={Styles.sectionTitle}>Location: </Text>
+              <Text style={Styles.values}>{testDetails.location}</Text>
+            </View>
             <View style={Styles.section}>
               <Text style={Styles.sectionTitle}>Test status:</Text>
-              <Picker
-                style={[{width: 200, color: getStatusColor()}]}
-                selectedValue={testDetails.status}
-                onValueChange={updateHandler}>
-                <Picker.Item label="Pending" value="pending" />
-                <Picker.Item label="Approved" value="approved" />
-                <Picker.Item label="Rejected" value="rejected" />
-              </Picker>
+              {user.role === 'admin' ? (
+                <Picker
+                  style={[{width: 200, color: getStatusColor()}]}
+                  selectedValue={testDetails.status}
+                  onValueChange={updateHandler}>
+                  <Picker.Item label="Pending" value="pending" />
+                  <Picker.Item label="Approved" value="approved" />
+                  <Picker.Item label="Rejected" value="rejected" />
+                </Picker>
+              ) : (
+                <Text
+                  style={[
+                    {color: getStatusColor(), textTransform: 'capitalize'},
+                  ]}>
+                  {testDetails.status}
+                </Text>
+              )}
             </View>
-          )}
-        </View>
-      )}
+            {user.role === 'user' && (
+              <Pressable
+                style={Styles.buttonStyle}
+                onPress={() => setIsUpdate(true)}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: '#ffffff',
+                  }}>
+                  Update Test
+                </Text>
+              </Pressable>
+            )}
+            {isUpdate && <CreateTestsForm test={testDetails} />}
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -111,6 +145,9 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'balck',
     width: 120,
+    borderRadius: 5,
+    padding: 5,
+    backgroundColor: 'black',
   },
   values: {
     textTransform: 'capitalize',

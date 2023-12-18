@@ -15,9 +15,18 @@ const initailvalue = {
   price: '',
   location: '',
 };
-export default function CreateTestsForm() {
+export default function CreateTestsForm({test}) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState(initailvalue);
+  const [formData, setFormData] = useState(
+    test
+      ? {
+          name: test.name,
+          description: test.description,
+          price: test.price,
+          location: test.location,
+        }
+      : initailvalue,
+  );
 
   const changeHandler = (key, value) => {
     setFormData(prev => ({...prev, [key]: value}));

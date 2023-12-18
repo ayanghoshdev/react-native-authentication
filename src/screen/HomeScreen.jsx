@@ -1,12 +1,31 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {useAuth} from '../contexts/authContext';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getService} from '../services/api';
 
 function HomeScreen({navigation}) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const {user, setUser} = useAuth();
+
+  const [notifications, setNotifications] = useState(null);
+
+  useEffect(() => {
+    if (user.role === 'admin') getAllNotifications();
+  });
+
+  const getAllNotifications = async () => {
+    try {
+      const res = await getService('/notifications/tests');
+      setNotifications(res.notifications);
+      setLoading(false);
+    } catch (error) {
+      ToastAndroid.show(error.message);
+      console.log(error.message);
+      setLoading(false);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -35,21 +54,36 @@ function HomeScreen({navigation}) {
           style={Styles.button}
           onPress={() => navigation.navigate('Notifications')}>
           <Text style={Styles.text}>See notifications</Text>
+          {!loading && (
+            <Text
+              style={{
+                position: 'absolute',
+                right: 10,
+                top: 5,
+                color: '#ffffff',
+                backgroundColor: 'red',
+                borderRadius: 50,
+                paddingHorizontal: 7,
+                fontSize: 18,
+              }}>
+              {notifications.length}
+            </Text>
+          )}
         </Pressable>
       ) : (
-        <>
-          <Pressable
-            style={Styles.button}
-            onPress={() => navigation.navigate('CreateTest')}>
-            <Text style={Styles.text}>Create your test here</Text>
-          </Pressable>
-          <Pressable
-            style={Styles.button}
-            onPress={() => navigation.navigate('TestList')}>
-            <Text style={Styles.text}>My tests</Text>
-          </Pressable>
-        </>
+        <Pressable
+          style={Styles.button}
+          onPress={() => navigation.navigate('CreateTest')}>
+          <Text style={Styles.text}>Create your test here</Text>
+        </Pressable>
       )}
+      <Pressable
+        style={Styles.button}
+        onPress={() => navigation.navigate('TestList')}>
+        <Text style={Styles.text}>
+          {user.role === 'admin' ? 'see all tests' : 'my tests'}
+        </Text>
+      </Pressable>
     </View>
   );
 }

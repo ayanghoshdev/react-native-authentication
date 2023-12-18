@@ -10,7 +10,7 @@ export default function NotificationsScreen() {
 
   useEffect(() => {
     getAllNotifications();
-  }, []);
+  });
 
   const getAllNotifications = async () => {
     try {
@@ -22,6 +22,20 @@ export default function NotificationsScreen() {
       console.log(error.message);
     }
   };
+
+  if (!loading && notifications.length < 1) {
+    return (
+      <Text
+        style={{
+          textTransform: 'capitalize',
+          textAlign: 'center',
+          fontSize: 20,
+          marginVertical: 20,
+        }}>
+        You don't have any notification
+      </Text>
+    );
+  }
 
   return (
     <View style={Styles.container}>

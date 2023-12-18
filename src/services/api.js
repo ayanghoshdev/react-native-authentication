@@ -58,3 +58,21 @@ export const pathService = async (endpoint, request) => {
     throw error;
   }
 };
+
+export const deleteService = async endpoint => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const res = await axios({
+      url: base_url + endpoint,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+};
