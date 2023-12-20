@@ -7,6 +7,7 @@ import {useFocusEffect} from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getService} from '../services/api';
+import socket from '../../utils/socket';
 
 function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
@@ -19,9 +20,20 @@ function HomeScreen({navigation}) {
       if (user.role === 'admin') {
         getAllNotifications();
       }
-      // No need for the cleanup function in this case
     }, []),
   );
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('connected to server');
+    });
+    socket.on('new-notification', data => {
+      // console.log(data);
+      setNotifications(prev => [...prev, data]);
+    });
+    // return () => {
+    //   socket.disconnect();
+    // };
+  }, []);
 
   const getAllNotifications = async () => {
     try {

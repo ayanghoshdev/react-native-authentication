@@ -1,16 +1,30 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {getService} from '../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NoficationsCard from '../components/NotificationCard';
+import socket from '../../utils/socket';
 
 export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isDelete, setIsDelete] = useState(false);
 
   useEffect(() => {
     getAllNotifications();
-  });
+  }, [isDelete]);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('connected to server');
+    });
+    socket.on('new-notification', data => {
+      // console.log(data);
+      setNotifications(prev => [...prev, data]);
+    });
+    // return () => {
+    //   socket.disconnect();
+    // };
+  }, []);
 
   const getAllNotifications = async () => {
     try {
@@ -44,7 +58,11 @@ export default function NotificationsScreen() {
         <Text>Loading...</Text>
       ) : (
         notifications.map(item => (
-          <NoficationsCard key={item._id} notification={item} />
+          <NoficationsCard
+            key={item._id}
+            notification={item}
+            setIsDelete={setIsDelete}
+          />
         ))
       )}
     </View>

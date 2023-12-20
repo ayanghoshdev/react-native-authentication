@@ -4,12 +4,13 @@ import {INFOICON} from '../images';
 import {useNavigation} from '@react-navigation/native';
 import {deleteService} from '../services/api';
 
-export default function NoficationsCard({notification}) {
+export default function NoficationsCard({notification, setIsDelete}) {
   const navigation = useNavigation();
 
   const clickHandler = async () => {
     try {
-      deleteService(`/notifications/tests/${notification._id}`);
+      await deleteService(`/notifications/tests/${notification._id}`);
+      setIsDelete(prev => !prev);
       navigation.navigate('TestDetails', {testId: notification?.test?._id});
     } catch (error) {
       console.log(error.message);
